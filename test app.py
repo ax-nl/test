@@ -10,6 +10,40 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
+# --- INLOGBEVEILIGING ---
+def check_password():
+    """Geeft True terug als de gebruiker het juiste wachtwoord heeft ingevoerd."""
+    
+    def password_entered():
+        if st.session_state["password"] == "Autocross2026":  # <-- Je kunt dit wachtwoord hier aanpassen
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]
+        else:
+            st.session_state["password_correct"] = False
+
+    if "password_correct" not in st.session_state:
+        st.text_input(
+            "Voer de toegangscode in om de app te openen:", 
+            type="password", 
+            on_change=password_entered, 
+            key="password"
+        )
+        return False
+    elif not st.session_state["password_correct"]:
+        st.text_input(
+            "Voer de toegangscode in om de app te openen:", 
+            type="password", 
+            on_change=password_entered, 
+            key="password"
+        )
+        st.error("😕 Onjuiste code")
+        return False
+    else:
+        return True
+
+if not check_password():
+    st.stop()
+
 # --- REPORTLAB PDF GENERATOR ---
 def genereer_pdf(df, serie_kolommen, klasse_naam, evenement_naam, output_pdf_pad):
     doc = SimpleDocTemplate(
